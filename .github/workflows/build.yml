@@ -72,7 +72,7 @@ jobs:
         shell: cmd
         run: |
           cd build
-          cmake -G "Visual Studio 17 2022" -DBUILD_SDLGPU=On -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_WITH_STEAM=ON -DBUILD_EDITORS=OFF -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON ..
+          cmake -G "Visual Studio 17 2022" -DBUILD_SDLGPU=On -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_WITH_STEAM=ON -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON ..
           cmake --build . --config MinSizeRel --parallel
 
       - name: Prepare Steam Export
@@ -132,7 +132,7 @@ jobs:
       - name: Build Steam Export
         run: |
           cd build
-          cmake -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_SDLGPU=On -DBUILD_WITH_STEAM=ON -DBUILD_EDITORS=OFF -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON ..
+          cmake -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_SDLGPU=On -DBUILD_WITH_STEAM=ON -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON ..
           cmake --build . --config MinSizeRel --parallel
 
       - name: Prepare Steam Export
@@ -287,7 +287,7 @@ jobs:
       - name: Build Steam Export
         run: |
           cd build
-          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_WITH_STEAM=On -DBUILD_EDITORS=OFF -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ..
+          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_WITH_STEAM=On -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ..
           cmake --build . --parallel
 
       - name: Prepare Steam Export
