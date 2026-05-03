@@ -1256,12 +1256,14 @@ void gotoSurf(Studio* studio)
     setStudioMode(studio, TIC_SURF_MODE);
 }
 #endif
-#if defined(BUILD_EDITORS)
 bool studio_is_cart_loaded(Studio* studio)
 {
-    return strlen(studio->console->rom.name) > 0 || (studio->start && studio->start->embed);
+    #if defined(BUILD_EDITORS)
+        return strlen(studio->console->rom.name) > 0 || (studio->start && studio->start->embed);
+    #else
+        return false;
+    #endif
 }
-#endif
 void setStudioMode(Studio* studio, EditorMode mode)
 {
     if(mode != studio->mode)
