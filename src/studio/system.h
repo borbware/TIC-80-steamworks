@@ -42,7 +42,8 @@
 #else
     #define TIC_WEBSITE_PROTOCOL "https://"
 #endif
-#define TIC_WEBSITE "http://localhost:3000" // TIC_WEBSITE_PROTOCOL TIC_HOST
+#define TIC_WEBSITE TIC_WEBSITE_PROTOCOL TIC_HOST
+#define TIC_NET_WEBSITE "http://localhost:3000"
 #define TIC_COPYRIGHT TIC_WEBSITE " (C) 2017-" TIC_VERSION_YEAR
 
 #define TICNAME_MAX 256

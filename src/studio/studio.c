@@ -2871,7 +2871,7 @@ Studio* studio_create(s32 argc, char **argv, s32 samplerate, tic80_pixel_color_f
 #endif
 #if defined(BUILD_EDITORS) || defined(BUILD_SURF)
         .samplerate = samplerate,
-        .net = tic_net_create(TIC_WEBSITE),
+        .net = tic_net_create(TIC_NET_WEBSITE),
 #endif
 #if defined(BUILD_EDITORS)
         .bytebattle = {0},

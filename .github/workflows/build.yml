@@ -21,19 +21,6 @@ jobs:
         with:
           ruby-version: 2.6
 
-      - name: Build
-        shell: cmd
-        run: |
-          cd build
-          cmake -G "Visual Studio 17 2022" -DBUILD_SDLGPU=On -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_WITH_ALL=ON -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ..
-          cmake --build . --parallel
-      - name: Deploy
-        uses: actions/upload-artifact@v4
-        with:
-          name: "tic80-windows"
-          path: |
-            build/bin/tic80.exe
-            build/bin/*.dll
 
       - name: Build Pro
         shell: cmd
@@ -54,14 +41,24 @@ jobs:
           cd build
           cmake  -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DBUILD_EDITORS=OFF -DBUILD_STATIC=On .. --fresh
           cmake --build . --parallel
-
       - name: Deploy Export Stub
         uses: actions/upload-artifact@v4
         with:
           name: "tic80-windows-export"
           path: |
             build/bin/tic80.exe
-            build/bin/*.dll
+
+      - name: Build Export Stub Editors
+        run: |
+          cd build
+          cmake  -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DBUILD_STATIC=On .. --fresh
+          cmake --build . --parallel
+      - name: Deploy Export Stub Editors
+        uses: actions/upload-artifact@v4
+        with:
+          name: "tic80-windows-export-editors"
+          path: |
+            build/bin/tic80.exe
 
   # === Ubuntu ===
   linux-gcc12-glibc235:
@@ -84,39 +81,31 @@ jobs:
           sudo ln -s -f /usr/bin/gcc-12 /usr/bin/gcc
           sudo ln -s -f /usr/bin/g++-12 /usr/bin/g++
           
-      - name: Build
-        run: |
-          cd build
-          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=ON ..
-          cmake --build . --parallel
-
-      - name: Deploy
-        uses: actions/upload-artifact@v4
-        with:
-          name: "tic80-linux-gcc12"
-          path: |
-            build/bin/tic80
-            build/bin/*.so
 
       - name: Build Pro
         run: |
           cd build
           cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_PRO=On -DBUILD_WITH_ALL=ON ..
           cmake --build . --parallel
+      - name: Deploy Pro
+        uses: actions/upload-artifact@v4
+        with:
+          name: "tic80-linux-gcc12-pro"
+          path: |
+            build/bin/tic80
+            build/bin/*.so
 
       - name: Build Export Stub
         run: |
           cd build
-          cmake -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DBUILD_EDITORS=OFF ..
+          cmake -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DBUILD_EDITORS=OFF -DBUILD_STATIC=On --fresh ..
           cmake --build . --parallel
-
       - name: Deploy Export Stub
         uses: actions/upload-artifact@v4
         with:
           name: "tic80-linux-gcc12-export"
           path: |
             build/bin/tic80
-            build/bin/*.so
 
   # === Ubuntu gcc14 ===
   linux-gcc14-glibc239:
@@ -140,39 +129,30 @@ jobs:
           sudo ln -s -f /usr/bin/gcc-14 /usr/bin/gcc
           sudo ln -s -f /usr/bin/g++-14 /usr/bin/g++
           
-      - name: Build
-        run: |
-          cd build
-          cmake -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=ON ..
-          cmake --build . --parallel
-
-      - name: Deploy
-        uses: actions/upload-artifact@v4
-        with:
-          name: "tic80-linux-gcc14"
-          path: |
-            build/bin/tic80
-            build/bin/*.so
-
       - name: Build Pro
         run: |
           cd build
           cmake -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_SDLGPU=On -DBUILD_PRO=On -DBUILD_WITH_ALL=ON ..
           cmake --build . --parallel
+      - name: Deploy Pro
+        uses: actions/upload-artifact@v4
+        with:
+          name: "tic80-linux-gcc14-pro"
+          path: |
+            build/bin/tic80
+            build/bin/*.so
 
       - name: Build Export Stub
         run: |
           cd build
           cmake -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DBUILD_EDITORS=OFF -DBUILD_STATIC=On .. --fresh
           cmake --build . --parallel
-
       - name: Deploy Export Stub
         uses: actions/upload-artifact@v4
         with:
           name: "tic80-linux-gcc14-export"
           path: |
             build/bin/tic80
-            build/bin/*.so
 
   # === MacOS 14 / arm64 ===
   macos-arm64:
@@ -187,25 +167,17 @@ jobs:
       - name: Install
         run: brew uninstall --ignore-dependencies libidn2
 
-      - name: Build
+      - name: Build Export Stub
         run: |
           cd build
-          cmake -DCMAKE_BUILD_TYPE=Release  -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=ON -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ..
+          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DBUILD_EDITORS=OFF -DBUILD_STATIC=On -DCMAKE_POLICY_VERSION_MINIMUM=3.5 .. --fresh
           cmake --build . --parallel
-
-      - name: Deploy
+      - name: Deploy Export Stub
         uses: actions/upload-artifact@v4
         with:
-          name: "tic80-macos-arm64"
+          name: "tic80-macos-arm-export"
           path: |
             build/bin/tic80
-            build/bin/*.dylib
-
-      - name: Build Pro
-        run: |
-          cd build
-          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_PRO=On -DBUILD_WITH_ALL=ON ..
-          cmake --build . --parallel
 
   # === MacOS 15 / x86_64 ===
   macos:
@@ -220,36 +192,27 @@ jobs:
       - name: Install
         run: brew uninstall --ignore-dependencies libidn2
 
-      - name: Build
-        run: |
-          cd build
-          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=ON -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ..
-          cmake --build . --parallel
-
-      - name: Deploy
-        uses: actions/upload-artifact@v4
-        with:
-          name: "tic80-macos"
-          path: |
-            build/bin/tic80
-            build/bin/*.dylib
-
       - name: Build Pro
         run: |
           cd build
           cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_PRO=On -DBUILD_WITH_ALL=ON -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ..
           cmake --build . --parallel
+      - name: Deploy Pro
+        uses: actions/upload-artifact@v4
+        with:
+          name: "tic80-macos-pro"
+          path: |
+            build/bin/tic80
+            build/bin/*.dylib
 
       - name: Build Export Stub
         run: |
           cd build
           cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DBUILD_EDITORS=OFF -DBUILD_STATIC=On -DCMAKE_POLICY_VERSION_MINIMUM=3.5 .. --fresh
           cmake --build . --parallel
-
       - name: Deploy Export Stub
         uses: actions/upload-artifact@v4
         with:
           name: "tic80-macos-export"
           path: |
             build/bin/tic80
-            build/bin/*.dylib
