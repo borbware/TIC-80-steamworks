@@ -52,7 +52,7 @@ jobs:
       - name: Build Export Stub
         run: |
           cd build
-          cmake  -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DBUILD_EDITORS=OFF ..
+          cmake  -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DBUILD_EDITORS=OFF -DBUILD_STATIC=On .. --fresh
           cmake --build . --parallel
 
       - name: Deploy Export Stub
@@ -163,7 +163,7 @@ jobs:
       - name: Build Export Stub
         run: |
           cd build
-          cmake -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DBUILD_EDITORS=OFF ..
+          cmake -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DBUILD_EDITORS=OFF -DBUILD_STATIC=On .. --fresh
           cmake --build . --parallel
 
       - name: Deploy Export Stub
@@ -243,7 +243,7 @@ jobs:
       - name: Build Export Stub
         run: |
           cd build
-          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DBUILD_EDITORS=OFF -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ..
+          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DBUILD_EDITORS=OFF -DBUILD_STATIC=On -DCMAKE_POLICY_VERSION_MINIMUM=3.5 .. --fresh
           cmake --build . --parallel
 
       - name: Deploy Export Stub
