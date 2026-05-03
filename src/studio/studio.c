@@ -1258,11 +1258,7 @@ void gotoSurf(Studio* studio)
 #endif
 bool studio_is_cart_loaded(Studio* studio)
 {
-    #if defined(BUILD_EDITORS)
-        return strlen(studio->console->rom.name) > 0 || (studio->start && studio->start->embed);
-    #else
-        return false;
-    #endif
+    return strlen(studio->console->rom.name) > 0 || (studio->start && studio->start->embed);
 }
 void setStudioMode(Studio* studio, EditorMode mode)
 {
