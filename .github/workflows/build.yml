@@ -26,8 +26,8 @@ jobs:
         shell: cmd
         run: |
           cd build
-          cmake -G "Visual Studio 17 2022" -DBUILD_SDLGPU=On -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_PRO=On -DBUILD_WITH_ALL=ON ..
-          cmake --build . --parallel
+          cmake -G "Visual Studio 17 2022" -DBUILD_SDLGPU=On -DCMAKE_BUILD_TYPE=Release -DBUILD_PRO=On -DBUILD_WITH_ALL=ON ..
+          cmake --build . --config Release --parallel
       - name: Deploy Pro
         uses: actions/upload-artifact@v4
         with:
@@ -39,26 +39,30 @@ jobs:
       - name: Build Export Stub
         run: |
           cd build
-          cmake  -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DBUILD_EDITORS=OFF -DBUILD_STATIC=On .. --fresh
-          cmake --build . --parallel
+          cmake  -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DBUILD_EDITORS=OFF -DBUILD_STATIC=On .. --fresh
+          cmake --build . --config Release --parallel
+      - name: Rename binary
+        run: mv build/bin/tic80.exe build/bin/winlua.exe
       - name: Deploy Export Stub
         uses: actions/upload-artifact@v4
         with:
           name: "tic80-windows-export"
           path: |
-            build/bin/tic80.exe
+            build/bin/winlua.exe
 
       - name: Build Export Stub Editors
         run: |
           cd build
-          cmake  -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DBUILD_STATIC=On .. --fresh
-          cmake --build . --parallel
+          cmake  -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DBUILD_STATIC=On .. --fresh
+          cmake --build . --config Release --parallel
+      - name: Rename binary
+        run: mv build/bin/tic80.exe build/bin/win.exe
       - name: Deploy Export Stub Editors
         uses: actions/upload-artifact@v4
         with:
           name: "tic80-windows-export-editors"
           path: |
-            build/bin/tic80.exe
+            build/bin/win.exe
 
   # === Ubuntu ===
   linux-gcc12-glibc235:
@@ -80,13 +84,12 @@ jobs:
           sudo apt-get install gcc-12 g++-12 libglu1-mesa-dev libasound2-dev libpulse-dev libaudio-dev libsamplerate0-dev libcurl4-openssl-dev -y
           sudo ln -s -f /usr/bin/gcc-12 /usr/bin/gcc
           sudo ln -s -f /usr/bin/g++-12 /usr/bin/g++
-          
 
       - name: Build Pro
         run: |
           cd build
           cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_PRO=On -DBUILD_WITH_ALL=ON ..
-          cmake --build . --parallel
+          cmake --build . --config Release --parallel
       - name: Deploy Pro
         uses: actions/upload-artifact@v4
         with:
@@ -98,14 +101,16 @@ jobs:
       - name: Build Export Stub
         run: |
           cd build
-          cmake -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DBUILD_EDITORS=OFF -DBUILD_STATIC=On --fresh ..
-          cmake --build . --parallel
+          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DBUILD_EDITORS=OFF -DBUILD_STATIC=On --fresh ..
+          cmake --build . --config Release --parallel
+      - name: Rename binary
+        run: mv build/bin/tic80 build/bin/linuxlua
       - name: Deploy Export Stub
         uses: actions/upload-artifact@v4
         with:
           name: "tic80-linux-gcc12-export"
           path: |
-            build/bin/tic80
+            build/bin/linuxlua
 
   # === Ubuntu gcc14 ===
   linux-gcc14-glibc239:
@@ -132,8 +137,8 @@ jobs:
       - name: Build Pro
         run: |
           cd build
-          cmake -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_SDLGPU=On -DBUILD_PRO=On -DBUILD_WITH_ALL=ON ..
-          cmake --build . --parallel
+          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_PRO=On -DBUILD_WITH_ALL=ON ..
+          cmake --build . --config Release --parallel
       - name: Deploy Pro
         uses: actions/upload-artifact@v4
         with:
@@ -145,14 +150,16 @@ jobs:
       - name: Build Export Stub
         run: |
           cd build
-          cmake -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DBUILD_EDITORS=OFF -DBUILD_STATIC=On .. --fresh
-          cmake --build . --parallel
+          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DBUILD_EDITORS=OFF -DBUILD_STATIC=On .. --fresh
+          cmake --build . --config Release --parallel
+      - name: Rename binary
+        run: mv build/bin/tic80 build/bin/linuxlua
       - name: Deploy Export Stub
         uses: actions/upload-artifact@v4
         with:
           name: "tic80-linux-gcc14-export"
           path: |
-            build/bin/tic80
+            build/bin/linuxlua
 
   # === MacOS 14 / arm64 ===
   macos-arm64:
@@ -171,13 +178,15 @@ jobs:
         run: |
           cd build
           cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DBUILD_EDITORS=OFF -DBUILD_STATIC=On -DCMAKE_POLICY_VERSION_MINIMUM=3.5 .. --fresh
-          cmake --build . --parallel
+          cmake --build . --config Release --parallel
+      - name: Rename binary
+        run: mv build/bin/tic80 build/bin/maclua
       - name: Deploy Export Stub
         uses: actions/upload-artifact@v4
         with:
           name: "tic80-macos-arm-export"
           path: |
-            build/bin/tic80
+            build/bin/maclua
 
   # === MacOS 15 / x86_64 ===
   macos:
@@ -196,7 +205,7 @@ jobs:
         run: |
           cd build
           cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_PRO=On -DBUILD_WITH_ALL=ON -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ..
-          cmake --build . --parallel
+          cmake --build . --config Release --parallel
       - name: Deploy Pro
         uses: actions/upload-artifact@v4
         with:
@@ -209,10 +218,12 @@ jobs:
         run: |
           cd build
           cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DBUILD_EDITORS=OFF -DBUILD_STATIC=On -DCMAKE_POLICY_VERSION_MINIMUM=3.5 .. --fresh
-          cmake --build . --parallel
+          cmake --build . --config Release --parallel
+      - name: Rename binary
+        run: mv build/bin/tic80 build/bin/maclua
       - name: Deploy Export Stub
         uses: actions/upload-artifact@v4
         with:
           name: "tic80-macos-export"
           path: |
-            build/bin/tic80
+            build/bin/maclua
