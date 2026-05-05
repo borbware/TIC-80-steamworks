@@ -137,33 +137,6 @@ jobs:
           path: |
             build/bin/linuxlua
 
-  # === MacOS 14 / arm64 ===
-  macos-arm64:
-    runs-on: macos-14
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-          fetch-depth: 0
-
-      - name: Install
-        run: brew uninstall --ignore-dependencies libidn2
-
-      - name: Build Export Stub Steam
-        run: |
-          cd build
-          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DBUILD_EDITORS=OFF -DBUILD_STATIC=On -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DBUILD_WITH_STEAM=ON ..
-          cmake --build . --config Release --parallel
-      - name: Rename binary
-        run: mv build/bin/tic80 build/bin/maclua
-      - name: Deploy Export Stub Steam
-        uses: actions/upload-artifact@v4
-        with:
-          name: "tic80-macos-arm-export"
-          path: |
-            build/bin/maclua
-
   # === MacOS 15 / x86_64 ===
   macos:
     runs-on: macos-15-intel
