@@ -137,62 +137,6 @@ jobs:
           path: |
             build/bin/linuxlua
 
-  # === Nintendo Switch build ===
-  nintendo-switch:
-    runs-on: ubuntu-latest
-    container: devkitpro/devkita64:20250728
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-          fetch-depth: 0
-
-      - name: Install Host toolchain
-        run: |
-          apt-get update
-          apt-get install --assume-yes build-essential ruby-full
-
-      - name: Build
-        run: |
-          cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=$DEVKITPRO/cmake/Switch.cmake \
-            -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_WITH_ALL=ON -DBUILD_SDLGPU=ON \
-            -DBUILD_WITH_YUE=OFF
-          cmake --build build --parallel
-
-      - name: Deploy
-        uses: actions/upload-artifact@v4
-        with:
-          name: "tic80-nintendo-switch"
-          path: build/bin/tic80.nro
-
-  # === MacOS 14 / arm64 ===
-  macos-arm64:
-    runs-on: macos-14
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-          fetch-depth: 0
-
-      - name: Install
-        run: brew uninstall --ignore-dependencies libidn2
-
-      - name: Build Export Stub Steam
-        run: |
-          cd build
-          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DBUILD_EDITORS=OFF -DBUILD_STATIC=On -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DBUILD_WITH_STEAM=ON ..
-          cmake --build . --config Release --parallel
-      - name: Rename binary
-        run: mv build/bin/tic80 build/bin/maclua
-      - name: Deploy Export Stub Steam
-        uses: actions/upload-artifact@v4
-        with:
-          name: "tic80-macos-arm-export"
-          path: |
-            build/bin/maclua
-
   # === MacOS 15 / x86_64 ===
   macos:
     runs-on: macos-15-intel

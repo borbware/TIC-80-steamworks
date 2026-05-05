@@ -91,7 +91,7 @@ if(BUILD_WITH_STEAM)
     endif()
     if(LINUX)
         target_link_libraries(tic80core PRIVATE ${CMAKE_SOURCE_DIR}/include/steam/lib/linux64/libsdkencryptedappticket.so)
-        target_link_libraries(tic80core PRIVATE ${CMAKE_SOURCE_DIR}/include/redistributable_bin/linux64/steam_api.so)
+        target_link_libraries(tic80core PRIVATE ${CMAKE_SOURCE_DIR}/include/redistributable_bin/linux64/libsteam_api.so)
     endif()
 endif()
 
