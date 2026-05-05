@@ -21,27 +21,16 @@ jobs:
         with:
           ruby-version: 2.6
 
-      - name: Build
-        shell: cmd
-        run: |
-          cd build
-          cmake -G "Visual Studio 17 2022" -DBUILD_SDLGPU=On -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_WITH_ALL=ON -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ..
-          cmake --build . --config MinSizeRel --parallel
-      - name: Deploy
-        uses: actions/upload-artifact@v4
-        with:
-          name: "tic80-windows"
-          path: |
-            build/bin/tic80.exe
-            build/bin/*.dll
 
-      - name: Build Pro
+      - name: Build Pro Steam
         shell: cmd
         run: |
           cd build
-          cmake -G "Visual Studio 17 2022" -DBUILD_SDLGPU=On -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_PRO=On -DBUILD_WITH_ALL=ON ..
-          cmake --build . --config MinSizeRel --parallel
-      - name: Deploy Pro
+          cmake -G "Visual Studio 17 2022" -DBUILD_SDLGPU=On -DCMAKE_BUILD_TYPE=Release -DBUILD_PRO=On -DBUILD_WITH_ALL=ON -DBUILD_WITH_STEAM=ON ..
+          cmake --build . --config Release --parallel
+      - name: Prepare Steam Export
+        run: cp include/redistributable_bin/win64/steam_api64.dll build/bin/
+      - name: Deploy Pro Steam
         uses: actions/upload-artifact@v4
         with:
           name: "tic80-windows-pro"
@@ -49,44 +38,33 @@ jobs:
             build/bin/tic80.exe
             build/bin/*.dll
 
-      - name: Build Pro Steam
-        shell: cmd
+      - name: Build Export Stub Steam
         run: |
           cd build
-          cmake -G "Visual Studio 17 2022" -DBUILD_SDLGPU=On -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_PRO=On -DBUILD_WITH_ALL=ON -DBUILD_WITH_STEAM=ON ..
-          cmake --build . --config MinSizeRel --parallel
-
-      - name: Prepare Steam Export
-        run: cp include/redistributable_bin/win64/steam_api64.dll build/bin/
-
-      - name: Deploy Pro Steam
+          cmake  -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DBUILD_EDITORS=OFF -DBUILD_STATIC=On -DBUILD_WITH_STEAM=ON .. --fresh
+          cmake --build . --config Release --parallel
+      - name: Rename binary
+        run: mv build/bin/tic80.exe build/bin/winlua.exe
+      - name: Deploy Export Stub Steam
         uses: actions/upload-artifact@v4
         with:
-          name: "tic80-windows-pro-steam"
+          name: "tic80-windows-export"
           path: |
-            build/bin/tic80.exe
-            build/bin/*.dll
-            build/bin/steam_api64.dll
+            build/bin/winlua.exe
 
-      - name: Build Steam Export
-        shell: cmd
+      - name: Build Export Stub Editors
         run: |
           cd build
-          cmake -G "Visual Studio 17 2022" -DBUILD_SDLGPU=On -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_WITH_STEAM=ON -DBUILD_EDITORS=OFF -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON ..
-          cmake --build . --config MinSizeRel --parallel
-
-      - name: Prepare Steam Export
-        run: cp include/redistributable_bin/win64/steam_api64.dll build/bin/
-
-      - name: Deploy Steam Export
+          cmake  -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DBUILD_STATIC=On -DBUILD_WITH_STEAM=ON .. --fresh
+          cmake --build . --config Release --parallel
+      - name: Rename binary
+        run: mv build/bin/tic80.exe build/bin/win.exe
+      - name: Deploy Export Stub Editors
         uses: actions/upload-artifact@v4
         with:
-          name: "tic80-windows-steam-export"
+          name: "tic80-windows-export-editors"
           path: |
-            build/bin/tic80.exe
-            build/bin/*.dll
-            build/bin/steam_api64.dll
-
+            build/bin/win.exe
 
   # === Ubuntu ===
   linux-gcc12-glibc235:
@@ -108,44 +86,20 @@ jobs:
           sudo apt-get install gcc-12 g++-12 libglu1-mesa-dev libasound2-dev libpulse-dev libaudio-dev libsamplerate0-dev libcurl4-openssl-dev -y
           sudo ln -s -f /usr/bin/gcc-12 /usr/bin/gcc
           sudo ln -s -f /usr/bin/g++-12 /usr/bin/g++
-          
-      - name: Build
+
+      - name: Build Export Stub
         run: |
           cd build
-          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_STATIC=ON -DBUILD_WITH_ALL=ON ..
-          cmake --build . --parallel
-
-      - name: Deploy
+          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DBUILD_EDITORS=OFF -DBUILD_STATIC=On -DBUILD_WITH_STEAM=ON --fresh ..
+          cmake --build . --config Release --parallel
+      - name: Rename binary
+        run: mv build/bin/tic80 build/bin/linuxlua
+      - name: Deploy Export Stub
         uses: actions/upload-artifact@v4
         with:
-          name: "tic80-linux-gcc12"
+          name: "tic80-linux-gcc12-export"
           path: |
-            build/bin/tic80
-            build/bin/*.so
-
-      - name: Build Pro
-        run: |
-          cd build
-          cmake -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_SDLGPU=On -DBUILD_PRO=On -DBUILD_WITH_ALL=ON ..
-          cmake --build . --config MinSizeRel --parallel
-
-      - name: Build Steam Export
-        run: |
-          cd build
-          cmake -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_SDLGPU=On -DBUILD_WITH_STEAM=ON -DBUILD_EDITORS=OFF -DBUILD_WITH_ALL=ON ..
-          cmake --build . --config MinSizeRel --parallel
-
-      - name: Prepare Steam Export
-        run: cp include/redistributable_bin/linux64/libsteam_api.so build/bin/
-
-      - name: Deploy Steam Export
-        uses: actions/upload-artifact@v4
-        with:
-          name: "tic80-linux-steam-export"
-          path: |
-            build/bin/tic80
-            build/bin/*.so
-            build/bin/libsteam_api.so
+            build/bin/linuxlua
 
   # === Ubuntu gcc14 ===
   linux-gcc14-glibc239:
@@ -168,26 +122,20 @@ jobs:
           sudo apt-get install gcc-14 g++-14 libxext-dev libglu1-mesa-dev libasound2-dev libpulse-dev libaudio-dev libsamplerate0-dev libcurl4-openssl-dev -y
           sudo ln -s -f /usr/bin/gcc-14 /usr/bin/gcc
           sudo ln -s -f /usr/bin/g++-14 /usr/bin/g++
-          
-      - name: Build
+
+      - name: Build Export Stub
         run: |
           cd build
-          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_STATIC=ON -DBUILD_WITH_ALL=ON ..
-          cmake --build . --parallel
-
-      - name: Deploy
+          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DBUILD_EDITORS=OFF -DBUILD_STATIC=On -DBUILD_WITH_STEAM=ON .. --fresh
+          cmake --build . --config Release --parallel
+      - name: Rename binary
+        run: mv build/bin/tic80 build/bin/linuxlua
+      - name: Deploy Export Stub
         uses: actions/upload-artifact@v4
         with:
-          name: "tic80-linux-gcc14"
+          name: "tic80-linux-gcc14-export"
           path: |
-            build/bin/tic80
-            build/bin/*.so
-
-      - name: Build Pro
-        run: |
-          cd build
-          cmake -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_SDLGPU=On -DBUILD_PRO=On -DBUILD_WITH_ALL=ON ..
-          cmake --build . --config MinSizeRel --parallel
+            build/bin/linuxlua
 
   # === MacOS 14 / arm64 ===
   macos-arm64:
@@ -202,25 +150,19 @@ jobs:
       - name: Install
         run: brew uninstall --ignore-dependencies libidn2
 
-      - name: Build
+      - name: Build Export Stub Steam
         run: |
           cd build
-          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_STATIC=ON -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=ON -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ..
-          cmake --build . --parallel
-
-      - name: Deploy
+          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DBUILD_EDITORS=OFF -DBUILD_STATIC=On -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DBUILD_WITH_STEAM=ON ..
+          cmake --build . --config Release --parallel
+      - name: Rename binary
+        run: mv build/bin/tic80 build/bin/maclua
+      - name: Deploy Export Stub Steam
         uses: actions/upload-artifact@v4
         with:
-          name: "tic80-macos-arm64"
+          name: "tic80-macos-arm-export"
           path: |
-            build/bin/tic80
-            build/bin/*.dylib
-
-      - name: Build Pro
-        run: |
-          cd build
-          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_PRO=On -DBUILD_WITH_ALL=ON ..
-          cmake --build . --parallel
+            build/bin/maclua
 
   # === MacOS 15 / x86_64 ===
   macos:
@@ -235,40 +177,16 @@ jobs:
       - name: Install
         run: brew uninstall --ignore-dependencies libidn2
 
-      - name: Build
+      - name: Build Export Stub Steam
         run: |
           cd build
-          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_STATIC=ON -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=ON -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ..
-          cmake --build . --parallel
-
-      - name: Deploy
+          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DBUILD_EDITORS=OFF -DBUILD_STATIC=On -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DBUILD_WITH_STEAM=ON ..
+          cmake --build . --config Release --parallel
+      - name: Rename binary
+        run: mv build/bin/tic80 build/bin/maclua
+      - name: Deploy Export Stub Steam
         uses: actions/upload-artifact@v4
         with:
-          name: "tic80-macos"
+          name: "tic80-macos-export"
           path: |
-            build/bin/tic80
-            build/bin/*.dylib
-
-      - name: Build Pro
-        run: |
-          cd build
-          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_PRO=On -DBUILD_WITH_ALL=ON -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ..
-          cmake --build . --parallel
-
-      - name: Build Steam Export
-        run: |
-          cd build
-          cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SDLGPU=On -DBUILD_WITH_STEAM=On -DBUILD_EDITORS=OFF -DBUILD_WITH_ALL=OFF -DBUILD_WITH_LUA=ON -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ..
-          cmake --build . --parallel
-
-      - name: Prepare Steam Export
-        run: cp include/redistributable_bin/osx/libsteam_api.dylib build/bin/
-
-      - name: Deploy Steam Export
-        uses: actions/upload-artifact@v4
-        with:
-          name: "tic80-macos-steam-export"
-          path: |
-            build/bin/tic80
-            build/bin/*.dylib
-            build/bin/libsteam_api.dylib
+            build/bin/maclua
