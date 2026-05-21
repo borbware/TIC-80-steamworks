@@ -544,8 +544,6 @@ static const char* const ButtonLabels[] =
 
 enum
 {
-    GamepadMenu_Index,
-    GamepadMenu_Separator,
     GamepadMenu_Gamepad0,
     GamepadMenu_Gamepad1,
     GamepadMenu_Gamepad2,
@@ -619,7 +617,7 @@ static void optionGamepadSet(void* data, s32 pos)
 
 static MenuOption GamepadOption =
 {
-    OPTION_VALUES({"1", "2", "3", "4"}),
+    OPTION_VALUES({"1", "2"}),
     optionGamepadGet,
     optionGamepadSet,
 };
@@ -643,9 +641,6 @@ static void initGamepadMenu(StudioMainMenu* main)
 {
     static const MenuItem GamepadMenu[] =
     {
-        {"GAMEPAD", NULL, &GamepadOption},
-        {""},
-
         {MappingItems[0], assignMapping},
         {MappingItems[1], assignMapping},
         {MappingItems[2], assignMapping},
