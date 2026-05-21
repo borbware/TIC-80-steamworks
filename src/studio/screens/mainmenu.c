@@ -438,7 +438,7 @@ static inline s32 mainMenuOffset(StudioMainMenu* menu)
     if (!studio_is_cart_loaded(menu->studio))
         return 3;
 
-    return 1;
+    return 0;
 }
 
 static void onResumeGame(void* data, s32 pos)
@@ -474,9 +474,9 @@ static void onSurf(void* data, s32 pos)
 
 enum MainMenu
 {
-    MainMenu_GameMenu,
     MainMenu_ResumeGame,
     MainMenu_ResetGame,
+    MainMenu_GameMenu,
 #if defined(BUILD_EDITORS)
     MainMenu_CloseGame,
 #endif
@@ -490,16 +490,16 @@ enum MainMenu
 
 static const MenuItem MainMenu[] =
 {
-    {"GAME MENU",   showGameMenu},
     {"RESUME GAME", onResumeGame},
     {"RESET GAME",  onResetGame},
+    {"GAME OPTIONS",showGameMenu},
 #if defined(BUILD_EDITORS)
     {"CLOSE GAME",  onExitGame, NULL, "Press F1 to switch to editor"},
 #endif
 #if defined(BUILD_SURF)
     {"SURF",        onSurf},
 #endif
-    {"OPTIONS",     showOptionsMenu},
+    {"TIC-80 OPTIONS",showOptionsMenu},
     {""},
     {"QUIT TIC-80", onExitStudio},
 };
