@@ -1010,7 +1010,7 @@ static void processGamepad()
                     // !TODO: We have to find a better way to handle gamepad MENU button
                     // atm we show game menu for only Pause Menu button on XBox one controller
                     // issue #1220
-                    if(getButton(controller, SDL_CONTROLLER_BUTTON_BACK))
+                    if(getButton(controller, SDL_CONTROLLER_BUTTON_BACK) || getButton(controller, SDL_CONTROLLER_BUTTON_START))
                     {
                         tic80_input* input = &platform.input;
                         input->keyboard.keys[0] = tic_key_escape;
