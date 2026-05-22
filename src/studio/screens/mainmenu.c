@@ -510,7 +510,15 @@ static void showMainMenu(void* data, s32 pos)
     initGameMenu(main);
 
     s32 offset = mainMenuOffset(main);
-    studio_menu_init(main->menu, MainMenu + offset, COUNT_OF(MainMenu) - offset, 0, 0, studio_is_cart_loaded(main->studio) ? onResumeGame : NULL, main);
+    studio_menu_init(
+        main->menu,
+        MainMenu + offset,
+        COUNT_OF(MainMenu) - offset,
+        0,
+        0,
+        studio_is_cart_loaded(main->studio) ? onResumeGame : NULL,
+        main
+    );
 }
 
 static void showOptionsMenuPos(void* data, s32 pos)
@@ -518,7 +526,15 @@ static void showOptionsMenuPos(void* data, s32 pos)
     StudioMainMenu* main = data;
 
     s32 offset = mainMenuOffset(main);
-    studio_menu_init(main->menu, OptionMenu, COUNT_OF(OptionMenu), pos, MainMenu_Options - offset, showMainMenu, main);
+    studio_menu_init(
+        main->menu,
+        OptionMenu,
+        COUNT_OF(OptionMenu),
+        0,
+        MainMenu_Options - offset,
+        showMainMenu,
+        main
+    );
 }
 
 static void showOptionsMenu(void* data, s32 pos)
